@@ -5,13 +5,13 @@
     import "maplibre-gl/dist/maplibre-gl.css";
     import { layers, namedFlavor } from "@protomaps/basemaps";
     import ThemeSwitcher from '../components/ThemeSwitcher.svelte';
-
+    import LineChooser from '../components/LineChooser.svelte';
+    import { Button } from "bits-ui";
     let map;
     
     // User preference 
     let theme = $state("dark");
     let themeSwitcher = $state(false);
-
     function buildStyle(t) {
         // toggleTheme()
         return {
@@ -27,7 +27,6 @@
 
         themeSwitcher = !themeSwitcher;
     }
-
 
     function changeTheme(newTheme) {
         theme = newTheme;
@@ -145,7 +144,6 @@
 
 
 
-
 <div class="relative w-full h-screen">
     <!-- Map -->
     <div id="map" class="w-full h-full"></div>
@@ -163,13 +161,18 @@
     {#if themeSwitcher}
         <ThemeSwitcher value={theme} onChange={changeTheme} class="absolute  m-3 flex h-15 w-15 items-center justify-center rounded-full bg-grey/40 backdrop-blur-sm text-white font-medium border border-white/20 hover:bg-white/50 transition-all" />
     {/if}
-    <div class="absolute top-50 right-5 z-10 flex flex-col ">
-        <button class="m-3 px-6 py-2 rounded-full bg-grey/40 backdrop-blur-3xl text-white font-medium border border-white/20 hover:bg-white/50 transition-all">
-            Line
-        </button>
-        <button class="m-3 px-6 py-2 rounded-full bg-grey/40 backdrop-blur-sm text-white font-medium border border-white/20 hover:bg-white/50 transition-all">
-            About
-        </button>
+
+    <div class="absolute top-50 right-5 z-10 flex flex-col gap-5">
+        
+        <LineChooser class="z-20 top-10 right-10"/>
+
+        <Button.Root
+          class="border border-white/20 bg-black/85 p-4 text-white rounded-3xl backdrop-blur-md bg-dark text-background shadow-mini hover:bg-dark/95 inline-flex
+        	h-10 items-center justify-center px-[21px] text-[17px]
+        	font-semibold active:scale-[0.98] active:transition-all"
+        >
+          About
+        </Button.Root>
     </div>
     
 
