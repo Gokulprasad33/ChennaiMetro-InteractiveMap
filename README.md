@@ -40,3 +40,7 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+
+# Sources 
+- CMRL Phase 2 : https://chennaimetrorail.org/wp-content/uploads/2025/03/Phase-II-Map-Updated-Map-PHASE-2.pdf
+- Wiki Pedia Reference : https://upload.wikimedia.org/wikipedia/commons/4/4f/Chennai_Metro_Map_updated.svg
