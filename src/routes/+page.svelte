@@ -6,8 +6,25 @@
     import { layers, namedFlavor } from "@protomaps/basemaps";
     import ThemeSwitcher from '../components/ThemeSwitcher.svelte';
     import LineChooser from '../components/LineChooser.svelte';
+    import { metroLines } from '$lib/store';
     import { Button } from "bits-ui";
     let map;
+    let unsubscribeMetro = null;
+    let currentMetroState = {
+        blueLine: true,
+        greenLine: true,
+        orangeLine: true,
+        redLine: true,
+        violetLine: true
+    };
+
+    const lineMap = {
+        blueLine: "1",
+        greenLine: "2",
+        orangeLine: "3",
+        redLine: "4",
+        violetLine: "5"
+    };
     
     // User preference 
     let theme = $state("dark");
@@ -44,13 +61,23 @@
       });
 
       map.once("style.load", () => {
-        loadMetro();
+        loadMetro(currentMetroState);
       });
 
-    //   Buggy
-        loadMetro();
     }
-    function loadMetro(){
+    
+    function loadMetro(metroState){
+        const activeRefs = Object.entries(lineMap)
+            .filter(([key]) => !!metroState?.[key])
+            .map(([, ref]) => ref);
+
+        console.log('activeRefs:', activeRefs);
+        if (activeRefs.length === 0) {
+            console.log('No active refs. Ensure this is intentional (all toggles off).');
+        }
+
+        const metroFilter = ["in", ["get", "ref"], ["literal", activeRefs]];
+
             if (!map.getSource("metro")) {
                 map.addSource("metro", {
                 type: "geojson",
@@ -62,16 +89,14 @@
                 id: "metro-line",
                 type: "line",
                 source: "metro",
-                filter: [
-                    "any",
-                    ["==", ["geometry-type"], "LineString"],
-                    ["==", ["geometry-type"], "MultiLineString"]
-                ],
+                filter: metroFilter,
                 paint: {
-                    "line-width": 6,
+                    "line-width": 4,
                     "line-color": ["coalesce", ["get", "colour"], "#00ffcc"]
                 }
             });
+        } else {
+            map.setFilter("metro-line", metroFilter);
         }
 
             // STATIONS
@@ -135,8 +160,15 @@
         });
 
         map.on("load", () => {
-            loadMetro();
+            unsubscribeMetro = metroLines.subscribe((value) => {
+                currentMetroState = value;
+                loadMetro(value);
+            });
         });
+
+        return () => {
+            if (unsubscribeMetro) unsubscribeMetro();
+        };
     });
 </script>
 
