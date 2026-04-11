@@ -1,19 +1,15 @@
-<script lang="ts">
+<script lang="js">
   import { Popover, Separator } from "bits-ui";
-  import { Label, Switch } from "bits-ui"; 
-  import blueLineIcon from "../../static/icons/lines/blueLine.svg"
-  import greenLineIcon from "../../static/icons/lines/greenLine.svg"
-  import orangeLineIcon from "../../static/icons/lines/orangeLine.svg"
-  import violetLineIcon from "../../static/icons/lines/violetLine.svg"
-  import redLineIcon from "../../static/icons/lines/redLine.svg"
+  import { Label, Switch } from "bits-ui";
+  import { metroLines } from '$lib/store';
 
-
-  let blueLine = $state(true);
-  let greenLine = $state(true);
-  let redLine = $state(true);
-  let violetLine = $state(true);
-  let orangeLine = $state(true);
-
+  const lines = [
+    { name: 'Blue Line', key: 'blueLine', icon: '/icons/lines/blueLine.svg' },
+    { name: 'Green Line', key: 'greenLine', icon: '/icons/lines/greenLine.svg' },
+    { name: 'Orange Line', key: 'orangeLine', icon: '/icons/lines/orangeLine.svg' },
+    { name: 'Violet Line', key: 'violetLine', icon: '/icons/lines/violetLine.svg' },
+    { name: 'Red Line', key: 'redLine', icon: '/icons/lines/redLine.svg' }
+  ];
 </script>
  
 <Popover.Root>
@@ -38,89 +34,27 @@
         </div>
       </div>
       <Separator.Root class="-mx-4 mb-6 mt-[17px] block h-px bg-white/15" />
-      <div class="flex items-center pb-2">
-        <div class="flex items-center">
-            <div>
-                <h1>Active</h1>
-                <div class="flex items-center space-x-3 m-3">
-                  
-                  <Label.Root for="BlueLine" class="text-sm font-medium text-white">Blue Line&nbsp</Label.Root>
-                  <img src={blueLineIcon} width="50px" height="50px">
-                  <Switch.Root
-                    bind:checked={blueLine}
-                    id="BlueLine"
-                    name="Blue"
-                    class="ml-2 focus-visible:ring-foreground focus-visible:ring-offset-background data-[state=checked]:bg-white data-[state=unchecked]:bg-dark-10 data-[state=unchecked]:shadow-mini-inset dark:data-[state=checked]:bg-white focus-visible:outline-hidden peer inline-flex h-[36px] min-h-[36px] w-[60px] shrink-0 cursor-pointer items-center rounded-full border border-white/40 px-[3px] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                    <Switch.Thumb
-            class="bg-background data-[state=unchecked]:shadow-mini dark:border-background/30 dark:bg-foreground dark:shadow-popover pointer-events-none block size-[30px] shrink-0 rounded-full border border-white/60 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_6px_14px_rgba(0,0,0,0.45)] transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0 dark:border dark:data-[state=unchecked]:border"
-                    />
-                  </Switch.Root>
-                </div>
-                <div class="flex items-center space-x-3 m-3">
-                  
-                  <Label.Root for="GreenLine" class="text-sm font-medium text-white">Green Line</Label.Root>
-                  <img src={greenLineIcon} width="50px" height="50px">
-                  <Switch.Root
-                    bind:checked={greenLine}
-                    id="GreenLine"
-                    name="Green"
-                    class="ml-2 focus-visible:ring-foreground focus-visible:ring-offset-background data-[state=checked]:bg-white data-[state=unchecked]:bg-dark-10 data-[state=unchecked]:shadow-mini-inset dark:data-[state=checked]:bg-white focus-visible:outline-hidden peer inline-flex h-[36px] min-h-[36px] w-[60px] shrink-0 cursor-pointer items-center rounded-full border border-white/40 px-[3px] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                    <Switch.Thumb
-            class="bg-background data-[state=unchecked]:shadow-mini dark:border-background/30 dark:bg-foreground dark:shadow-popover pointer-events-none block size-[30px] shrink-0 rounded-full border border-white/60 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_6px_14px_rgba(0,0,0,0.45)] transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0 dark:border dark:data-[state=unchecked]:border"
-                    />
-                  </Switch.Root>
-                </div>
-                <Separator.Root class="-mx-4 mb-6 mt-[17px] block h-px bg-white/15" />
-                <h1>Under Construction</h1>
-                <div class="flex items-center space-x-3 m-3">
-                  
-                  <Label.Root for="OrangeLine" class="text-sm font-medium text-white">Orange Line</Label.Root>
-                  <img src={orangeLineIcon} width="50px" height="50px">
-                  <Switch.Root
-                    bind:checked={orangeLine}
-                    id="OrangeLine"
-                    name="Orange"
-                    class="ml-2 focus-visible:ring-foreground focus-visible:ring-offset-background data-[state=checked]:bg-white data-[state=unchecked]:bg-dark-10 data-[state=unchecked]:shadow-mini-inset dark:data-[state=checked]:bg-white focus-visible:outline-hidden peer inline-flex h-[36px] min-h-[36px] w-[60px] shrink-0 cursor-pointer items-center rounded-full border border-white/40 px-[3px] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                    <Switch.Thumb
-            class="bg-background data-[state=unchecked]:shadow-mini dark:border-background/30 dark:bg-foreground dark:shadow-popover pointer-events-none block size-[30px] shrink-0 rounded-full border border-white/60 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_6px_14px_rgba(0,0,0,0.45)] transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0 dark:border dark:data-[state=unchecked]:border"
-                    />
-                  </Switch.Root>
-                </div>  
-                <div class="flex items-center space-x-3 m-3">
-                  
-                  <Label.Root for="RedLine" class="text-sm font-medium text-white">Red Line&nbsp&nbsp&nbsp</Label.Root>
-                  <img src={redLineIcon} width="50px" height="50px">
-                  <Switch.Root
-                    bind:checked={redLine}
-                    id="RedLine"
-                    name="Red"
-                    class="ml-2 *:focus-visible:ring-foreground focus-visible:ring-offset-background data-[state=checked]:bg-white data-[state=unchecked]:bg-dark-10 data-[state=unchecked]:shadow-mini-inset dark:data-[state=checked]:bg-white focus-visible:outline-hidden peer inline-flex h-[36px] min-h-[36px] w-[60px] shrink-0 cursor-pointer items-center rounded-full border border-white/40 px-[3px] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                    <Switch.Thumb
-            class="bg-background data-[state=unchecked]:shadow-mini dark:border-background/30 dark:bg-foreground dark:shadow-popover pointer-events-none block size-[30px] shrink-0 rounded-full border border-white/60 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_6px_14px_rgba(0,0,0,0.45)] transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0 dark:border dark:data-[state=unchecked]:border"
-                    />
-                  </Switch.Root>
-                </div>
-                <div class="flex items-center space-x-3 m-3">
-                  
-                  <Label.Root for="VioletLine" class="text-sm font-medium text-white">Violet Line</Label.Root>
-                  <img src={blueLineIcon} width="50px" height="50px">
-                  <Switch.Root
-                    bind:checked={violetLine}
-                    id="VioletLine"
-                    name="Violet"
-                    class="ml-2 focus-visible:ring-foreground focus-visible:ring-offset-background data-[state=checked]:bg-white data-[state=unchecked]:bg-dark-10 data-[state=unchecked]:shadow-mini-inset dark:data-[state=checked]:bg-white focus-visible:outline-hidden peer inline-flex h-[36px] min-h-[36px] w-[60px] shrink-0 cursor-pointer items-center rounded-full border border-white/40 px-[3px] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                    <Switch.Thumb
-            class="bg-background data-[state=unchecked]:shadow-mini dark:border-background/30 dark:bg-foreground dark:shadow-popover pointer-events-none block size-[30px] shrink-0 rounded-full border border-white/60 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_6px_14px_rgba(0,0,0,0.45)] transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-0 dark:border dark:data-[state=unchecked]:border"
-                    />
-                  </Switch.Root>
-                </div>
+      <div class="flex flex-col space-y-4">
+        {#each lines as line}
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <img src={line.icon} width="24" height="24" alt={line.name} class="h-6 w-6">
+              <Label.Root for={line.key} class="text-sm font-medium text-white">{line.name}</Label.Root>
             </div>
-        </div>
+            <Switch.Root
+              id={line.key}
+              checked={$metroLines[line.key]}
+              onCheckedChange={(checked) => {
+                metroLines.update(m => ({ ...m, [line.key]: checked }));
+              }}
+              class="relative inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-500"
+            >
+              <Switch.Thumb
+                class="pointer-events-none block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+              />
+            </Switch.Root>
+          </div>
+        {/each}
       </div>
     </Popover.Content>
   </Popover.Portal>
