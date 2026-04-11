@@ -44,3 +44,14 @@ You can preview the production build with `npm run preview`.
 # Sources 
 - CMRL Phase 2 : https://chennaimetrorail.org/wp-content/uploads/2025/03/Phase-II-Map-Updated-Map-PHASE-2.pdf
 - Wiki Pedia Reference : https://upload.wikimedia.org/wikipedia/commons/4/4f/Chennai_Metro_Map_updated.svg
+
+
+
+# TODO :
+- [x] Metro liner chooser
+- [ ] Add about page
+    - [ ] Demonstration of how the website works
+    - [ ] Github link
+- [ ] Station details 
+- [ ] Change station icon
+- [ ] Add EMU routes
