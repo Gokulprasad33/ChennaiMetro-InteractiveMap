@@ -7,24 +7,26 @@
     import ThemeSwitcher from '../components/ThemeSwitcher.svelte';
     import LineChooser from '../components/LineChooser.svelte';
     import { metroLines } from '$lib/store';
-    import { Button } from "bits-ui";
+    import { Button, Dialog } from "bits-ui";
     let map;
     let unsubscribeMetro = null;
     let currentMetroState = {
         blueLine: true,
         greenLine: true,
         orangeLine: true,
+        violetLine: true,
         redLine: true,
-        violetLine: true
     };
 
     const lineMap = {
         blueLine: "1",
         greenLine: "2",
-        orangeLine: "3",
-        redLine: "4",
-        violetLine: "5"
+        orangeLine: "4",// B
+        violetLine: "3",
+        redLine: "5",
     };
+
+    const lineOrder = ['blueLine', 'greenLine', 'orangeLine', 'violetLine', 'redLine'];
     
     // User preference 
     let theme = $state("dark");
@@ -67,9 +69,9 @@
     }
     
     function loadMetro(metroState){
-        const activeRefs = Object.entries(lineMap)
-            .filter(([key]) => !!metroState?.[key])
-            .map(([, ref]) => ref);
+        const activeRefs = lineOrder
+            .filter((key) => !!metroState?.[key])
+            .map((key) => lineMap[key]);
 
         console.log('activeRefs:', activeRefs);
         if (activeRefs.length === 0) {
@@ -77,7 +79,11 @@
         }
 
         const metroFilter = ["in", ["get", "ref"], ["literal", activeRefs]];
-
+        const stationFilter = [
+            "all",
+            ["==", "$type", "Point"],
+            ["in", ["get", "ref"], ["literal", activeRefs]]
+        ];
             if (!map.getSource("metro")) {
                 map.addSource("metro", {
                 type: "geojson",
@@ -105,12 +111,17 @@
                 id: "stations",
                 type: "circle",
                 source: "metro",
-                filter: ["==", "$type", "Point"],
+                filter:["==", "$type", "Point"],
                 paint: {
-                    "circle-radius": 10,
-                    "circle-color": "#ff0000"
-                }
+                    "circle-radius": 5,
+                    "circle-color": ["coalesce", ["get", "colour"], "#ffffff"],
+                    "circle-stroke-width": 3,
+                    "circle-stroke-color": "#000000",
+                    "circle-opacity": 0.6
+                },
+                
             });
+            
         }
 
             // CLICK INTERACTION
@@ -134,6 +145,8 @@
             });
             // map.moveLayer("metro-line");
         }
+
+        
         }
 
     onMount(() => {
@@ -156,7 +169,9 @@
                 layers: layers("protomaps", namedFlavor(theme), { lang: "en" })
             },
             center: [80.2707, 13.0827],
-            zoom: 12
+            zoom: 12,
+
+            minZoom:11
         });
 
         map.on("load", () => {
@@ -165,6 +180,7 @@
                 loadMetro(value);
             });
         });
+        
 
         return () => {
             if (unsubscribeMetro) unsubscribeMetro();
@@ -198,13 +214,59 @@
         
         <LineChooser class="z-20 top-10 right-10"/>
 
-        <Button.Root
-          class="border border-white/20 bg-black/85 p-4 text-white rounded-3xl backdrop-blur-md bg-dark text-background shadow-mini hover:bg-dark/95 inline-flex
-        	h-10 items-center justify-center px-[21px] text-[17px]
-        	font-semibold active:scale-[0.98] active:transition-all"
-        >
-          About
-        </Button.Root>
+                <Dialog.Root>
+                    <Dialog.Trigger asChild>
+                        <Button.Root
+                            class="border border-white/20 bg-black/85 p-4 text-white rounded-3xl backdrop-blur-md bg-dark text-background shadow-mini hover:bg-dark/95 inline-flex
+	        h-10 items-center justify-center px-[21px] text-[17px]
+	        font-semibold active:scale-[0.98] active:transition-all"
+                        >
+                            About
+                        </Button.Root>
+                    </Dialog.Trigger>
+
+                    <Dialog.Portal>
+                        <Dialog.Overlay class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
+                        <Dialog.Content
+                            class="fixed top-1/2 left-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/20 bg-black/90 p-6 text-white shadow-xl"
+                        >
+                            <Dialog.Title class="mb-2 text-xl font-semibold">About</Dialog.Title>
+                            <Dialog.Description class="text-sm leading-relaxed text-white/80">
+                                Chennai Transport Map is an interactive metro visualization where you can toggle lines and explore stations.
+                            </Dialog.Description>
+                            <div class="mt-4 text-xs text-white/50">Built using MapLibre GL + Svelte</div>
+
+                            <div class="mt-4 flex w-full flex-col gap-3">
+                                <a
+                                    href="https://github.com/Gokulprasad33"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-medium text-white transition-colors hover:bg-white/20"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5 fill-current" aria-hidden="true">
+                                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58 0-.29-.01-1.04-.02-2.04-3.34.73-4.04-1.61-4.04-1.61-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.23 1.84 1.23 1.08 1.85 2.82 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23A11.5 11.5 0 0 1 12 5.8c1.02 0 2.04.14 3 .41 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.62-2.8 5.64-5.48 5.94.43.37.82 1.1.82 2.22 0 1.61-.02 2.91-.02 3.31 0 .32.22.69.83.57A12.01 12.01 0 0 0 24 12c0-6.63-5.37-12-12-12Z" />
+                                    </svg>
+                                    <span>github.com/Gokulprasad33</span>
+                                </a>
+
+                                <a
+                                    href="https://github.com/Gokulprasad33/ChennaiMetro-InteractiveMap"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+                                >
+                                    Source Code
+                                </a>
+                            </div>
+
+                            <div class="mt-6 flex justify-end">
+                                <Dialog.Close asChild>
+                                    <Button.Root class="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20">Close</Button.Root>
+                                </Dialog.Close>
+                            </div>
+                        </Dialog.Content>
+                    </Dialog.Portal>
+                </Dialog.Root>
     </div>
     
 

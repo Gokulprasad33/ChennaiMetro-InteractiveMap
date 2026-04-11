@@ -55,3 +55,4 @@ You can preview the production build with `npm run preview`.
 - [ ] Station details 
 - [ ] Change station icon
 - [ ] Add EMU routes
+- [ ] Add railways station label

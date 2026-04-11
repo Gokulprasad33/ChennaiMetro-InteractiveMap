@@ -35,7 +35,13 @@
       </div>
       <Separator.Root class="-mx-4 mb-6 mt-[17px] block h-px bg-white/15" />
       <div class="flex flex-col space-y-4">
-        {#each lines as line}
+        {#each lines as line, index}
+          {#if index === 2}
+            <Separator.Root class="-mx-4 my-1 block h-px bg-white/15" />
+            <p class="text-xs font-semibold tracking-[0.08em] text-white/65 uppercase">
+              Under Construction
+            </p>
+          {/if}
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
               <img src={line.icon} width="24" height="24" alt={line.name} class="h-6 w-6">
