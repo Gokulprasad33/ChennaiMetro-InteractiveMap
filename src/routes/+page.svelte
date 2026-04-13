@@ -67,6 +67,38 @@
       });
 
     }
+
+    function parseRelations(rawRelations) {
+        if (Array.isArray(rawRelations)) return rawRelations;
+        if (typeof rawRelations === 'string') {
+            try {
+                const parsed = JSON.parse(rawRelations);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+        return [];
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function getStationPopupData(properties = {}) {
+        const relations = parseRelations(properties?.['@relations']);
+        const rel = relations?.[0]?.reltags;
+
+        const name = properties?.name || properties?.station || properties?.stadium || rel?.name || 'Station';
+        const ref = properties?.ref || rel?.ref || 'N/A';
+
+        return { name, ref };
+    }
     
     function loadMetro(metroState){
         const activeRefs = lineOrder
@@ -128,11 +160,26 @@
             if (!map._stationEventsAdded) {
             map._stationEventsAdded = true;
             map.on("click", "stations", (e) => {
-                const name = e.features[0].properties.name || "Station";
+                                const feature = e.features?.[0];
+                                if (!feature) return;
 
-                new maplibregl.Popup()
+                                const props = feature.properties;
+                                const { name, ref } = getStationPopupData(props);
+
+                                if (name === "Station" || ref === "N/A") {
+                                    console.log(feature.properties);
+                                }
+
+                                const popupHtml = `
+                                    <div style="min-width: 220px; color: #fff; font-family: Inter, system-ui, sans-serif;">
+                                        <div style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">${escapeHtml(name)}</div>
+                                        <div style="font-size: 12px; opacity: 0.8;">Line Ref: ${escapeHtml(ref)}</div>
+                                    </div>
+                                `;
+
+                new maplibregl.Popup({ className: 'station-popup' })
                     .setLngLat(e.lngLat)
-                    .setText(name)
+                    .setHTML(popupHtml)
                     .addTo(map);
             });
 
@@ -271,3 +318,22 @@
     
 
 </div>
+
+<style>
+    :global(.maplibregl-popup.station-popup .maplibregl-popup-content) {
+        background: rgba(10, 10, 10, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+        padding: 12px 14px;
+    }
+
+    :global(.maplibregl-popup.station-popup .maplibregl-popup-tip) {
+        border-top-color: rgba(10, 10, 10, 0.95);
+        border-bottom-color: rgba(10, 10, 10, 0.95);
+    }
+
+    :global(.maplibregl-popup.station-popup .maplibregl-popup-close-button) {
+        color: rgba(255, 255, 255, 0.9);
+    }
+</style>
