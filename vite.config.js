@@ -6,5 +6,6 @@ export default defineConfig({
 	plugins: [
     	tailwindcss(),
 		sveltekit(),
-	]
+	],
+	base: '/ChennaiMetro-InteractiveMap/'
 });

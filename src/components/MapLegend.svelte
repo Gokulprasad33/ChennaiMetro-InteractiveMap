@@ -1,5 +1,6 @@
 <script>
 	import { Separator } from 'bits-ui';
+	import { base } from '$app/paths';
 
 	const metroLines = [
 		{ name: 'Blue Line', icon: '/icons/lines/blueLine.svg' },
@@ -22,7 +23,7 @@
 			<div class="mt-2 flex flex-col gap-2">
 				{#each metroLines as line}
 					<div class="flex items-center gap-2">
-						<img src={line.icon} alt="{line.name} icon" class="h-5 w-5" />
+						<img src="{base}{line.icon}" alt="{line.name} icon" class="h-5 w-5" />
 						<span class="text-xs">{line.name}</span>
 					</div>
 				{/each}

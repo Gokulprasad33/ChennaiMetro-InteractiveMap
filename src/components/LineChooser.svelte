@@ -2,6 +2,7 @@
   import { Popover, Separator } from "bits-ui";
   import { Label, Switch } from "bits-ui";
   import { metroLines } from '$lib/store';
+  import { base } from '$app/paths';
 
   const lines = [
     { name: 'Blue Line', key: 'blueLine', icon: '/icons/lines/blueLine.svg' },
@@ -44,7 +45,7 @@
           {/if}
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
-              <img src={line.icon} width="24" height="24" alt={line.name} class="h-6 w-6">
+              <img src="{base}{line.icon}" width="24" height="24" alt={line.name} class="h-6 w-6">
               <Label.Root for={line.key} class="text-sm font-medium text-white">{line.name}</Label.Root>
             </div>
             <Switch.Root

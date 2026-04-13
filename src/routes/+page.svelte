@@ -8,6 +8,7 @@
     import LineChooser from '../components/LineChooser.svelte';
     import MapLegend from '../components/MapLegend.svelte';
     import { metroLines } from '$lib/store';
+    import { base } from '$app/paths';
     import { Button, Dialog } from "bits-ui";
     let map;
     let unsubscribeMetro = null;
@@ -39,7 +40,7 @@
             version: 8,
             glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
             sprite: `https://protomaps.github.io/basemaps-assets/sprites/v4/${t}`,
-            sources: { protomaps: { type: "vector", url: "pmtiles:///chennai.pmtiles" } },
+            sources: { protomaps: { type: "vector", url: `pmtiles://${base}/chennai.pmtiles` } },
             layers: layers("protomaps", namedFlavor(t), { lang: "en" })
         };
     }
@@ -58,7 +59,7 @@
         sources: {
           protomaps: {
             type: "vector",
-            url: "pmtiles:///chennai.pmtiles"
+            url: `pmtiles://${base}/chennai.pmtiles`
           }
         },
         layers: layers("protomaps", namedFlavor(newTheme), { lang: "en" })
@@ -71,13 +72,25 @@
 
     }
 
-    function loadRailways(metroState = currentMetroState) {
-        if (!map.getSource("railways")) {
-            map.addSource("railways", {
-                type: "geojson",
-                data: "/mapData/railwaysData.geojson"
-            });
-            console.log(map.getSource("railways"));
+    async function loadRailways(metroState = currentMetroState) {
+        if (!map.getSource('railways')) {
+            try {
+                const fetchURL = `${base}/mapData/railwaysData.geojson`;
+                console.log('FETCH URL (Railways):', fetchURL);
+                const response = await fetch(fetchURL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                map.addSource('railways', {
+                    type: 'geojson',
+                    data: data
+                });
+            } catch (error) {
+                console.error('Failed to load railwaysData.geojson:', error);
+                return;
+            }
         }
 
         const beforeMetroId = map.getLayer("metro-line") ? "metro-line" : undefined;
@@ -183,28 +196,36 @@
         return { name, ref };
     }
     
-    function loadMetro(metroState){
-        const activeRefs = lineOrder
-            .filter((key) => !!metroState?.[key])
-            .map((key) => lineMap[key]);
+    async function loadMetro(metroState) {
+        const activeRefs = lineOrder.filter((key) => !!metroState?.[key]).map((key) => lineMap[key]);
 
         console.log('activeRefs:', activeRefs);
         if (activeRefs.length === 0) {
             console.log('No active refs. Ensure this is intentional (all toggles off).');
         }
 
-        const metroFilter = ["in", ["get", "ref"], ["literal", activeRefs]];
-        const stationFilter = [
-            "all",
-            ["==", "$type", "Point"],
-            ["in", ["get", "ref"], ["literal", activeRefs]]
-        ];
-            if (!map.getSource("metro")) {
-                map.addSource("metro", {
-                type: "geojson",
-                data: "/mapData/metroData.geojson"
-              });
+        const metroFilter = ['in', ['get', 'ref'], ['literal', activeRefs]];
+        const stationFilter = ['all', ['==', '$type', 'Point'], ['in', ['get', 'ref'], ['literal', activeRefs]]];
+
+        if (!map.getSource('metro')) {
+            try {
+                const fetchURL = `${base}/mapData/metroData.geojson`;
+                console.log('BASE:', base);
+                console.log('FETCH URL (Metro):', fetchURL);
+                const response = await fetch(fetchURL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                map.addSource('metro', {
+                    type: 'geojson',
+                    data: data
+                });
+            } catch (error) {
+                console.error('Failed to load metroData.geojson:', error);
+                return;
             }
+        }
             if (!map.getLayer("metro-line")) {
             map.addLayer({
                 id: "metro-line",
@@ -293,7 +314,7 @@
                 sources: {
                     protomaps: {
                         type: "vector",
-                        url: "pmtiles:///chennai.pmtiles"
+                        url: `pmtiles://${base}/chennai.pmtiles`
                     }
                 },
                 layers: layers("protomaps", namedFlavor(theme), { lang: "en" })
@@ -301,15 +322,29 @@
             center: [80.2707, 13.0827],
             zoom: 12,
 
-            minZoom:11
+            minZoom:11,
+            
         });
 
-        map.on("load", () => {
-            loadRailways(currentMetroState);
-            unsubscribeMetro = metroLines.subscribe((value) => {
+        map.on("load", async () => {
+            await loadRailways(currentMetroState);
+            await loadMetro(currentMetroState);
+            
+            unsubscribeMetro = metroLines.subscribe(async (value) => {
                 currentMetroState = value;
-                loadRailways(value);
-                loadMetro(value);
+                // We don't need to reload the data, just update filters and layouts
+                if (map.getSource('railways')) {
+                    const railVisibility = value?.trainLine ? 'visible' : 'none';
+                    if (map.getLayer('rail-lines')) map.setLayoutProperty('rail-lines', 'visibility', railVisibility);
+                    if (map.getLayer('rail-stations')) map.setLayoutProperty('rail-stations', 'visibility', railVisibility);
+                }
+                if (map.getSource('metro')) {
+                     const activeRefs = lineOrder.filter((key) => !!value?.[key]).map((key) => lineMap[key]);
+                     const metroFilter = ["in", ["get", "ref"], ["literal", activeRefs]];
+                     const stationFilter = ["all", ["==", "$type", "Point"], ["in", ["get", "ref"], ["literal", activeRefs]]];
+                     if (map.getLayer('metro-line')) map.setFilter('metro-line', metroFilter);
+                     if (map.getLayer('stations')) map.setFilter('stations', stationFilter);
+                }
             });
         });
         
