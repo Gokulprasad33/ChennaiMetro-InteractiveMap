@@ -61,6 +61,29 @@
             </Switch.Root>
           </div>
         {/each}
+
+        <Separator.Root class="-mx-4 my-1 block h-px bg-white/15" />
+        <p class="text-xs font-semibold tracking-[0.08em] text-white/65 uppercase">
+          Railways
+        </p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="h-6 w-6 rounded-full bg-white/20"></div>
+            <Label.Root for="trainLine" class="text-sm font-medium text-white">Train</Label.Root>
+          </div>
+          <Switch.Root
+            id="trainLine"
+            checked={$metroLines.trainLine}
+            onCheckedChange={(checked) => {
+              metroLines.update(m => ({ ...m, trainLine: checked }));
+            }}
+            class="relative inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-500"
+          >
+            <Switch.Thumb
+              class="pointer-events-none block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            />
+          </Switch.Root>
+        </div>
       </div>
     </Popover.Content>
   </Popover.Portal>

@@ -6,5 +6,6 @@ export const metroLines = writable({
   orangeLine: true,
   violetLine: true,
   redLine: true,
+  trainLine: true,
 });
 
