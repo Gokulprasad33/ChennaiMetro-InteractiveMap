@@ -6,6 +6,7 @@
     import { layers, namedFlavor } from "@protomaps/basemaps";
     import ThemeSwitcher from '../components/ThemeSwitcher.svelte';
     import LineChooser from '../components/LineChooser.svelte';
+    import MapLegend from '../components/MapLegend.svelte';
     import { metroLines } from '$lib/store';
     import { Button, Dialog } from "bits-ui";
     let map;
@@ -300,7 +301,7 @@
             center: [80.2707, 13.0827],
             zoom: 12,
 
-            // minZoom:11
+            minZoom:11
         });
 
         map.on("load", () => {
@@ -326,6 +327,8 @@
 <div class="relative w-full h-screen">
     <!-- Map -->
     <div id="map" class="w-full h-full"></div>
+
+    <MapLegend />
 
     <!-- Overlay -->
     <div class="absolute top-5 left-5 z-10 
