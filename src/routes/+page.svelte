@@ -16,6 +16,7 @@
         orangeLine: true,
         violetLine: true,
         redLine: true,
+        trainLine: true,
     };
 
     const lineMap = {
@@ -63,9 +64,90 @@
       });
 
       map.once("style.load", () => {
+                loadRailways(currentMetroState);
         loadMetro(currentMetroState);
       });
 
+    }
+
+    function loadRailways(metroState = currentMetroState) {
+        if (!map.getSource("railways")) {
+            map.addSource("railways", {
+                type: "geojson",
+                data: "/mapData/railwaysData.geojson"
+            });
+            console.log(map.getSource("railways"));
+        }
+
+        const beforeMetroId = map.getLayer("metro-line") ? "metro-line" : undefined;
+
+        if (!map.getLayer("rail-lines")) {
+            const railLinesLayer = {
+                id: "rail-lines",
+                type: "line",
+                source: "railways",
+                filter: [
+                    "any",
+                    ["==", ["geometry-type"], "LineString"],
+                    ["==", ["geometry-type"], "MultiLineString"]
+                ],
+                paint: {
+                    "line-width": 2,
+                    "line-color": "yellow",
+                    "line-opacity": 0.7
+                }
+            };
+
+            if (beforeMetroId) map.addLayer(railLinesLayer, beforeMetroId);
+            else map.addLayer(railLinesLayer);
+        }
+
+        if (!map.getLayer("rail-stations")) {
+            const railStationsLayer = {
+                id: "rail-stations",
+                type: "circle",
+                source: "railways",
+                filter: ["==", "$type", "Point"],
+                paint: {
+                    "circle-radius": 4,
+                    "circle-color": "#ffffff",
+                    "circle-stroke-width": 2,
+                    "circle-stroke-color": "#666"
+                }
+            };
+
+            if (beforeMetroId) map.addLayer(railStationsLayer, beforeMetroId);
+            else map.addLayer(railStationsLayer);
+        }
+
+        const railVisibility = metroState?.trainLine ? "visible" : "none";
+        if (map.getLayer("rail-lines")) {
+            map.setLayoutProperty("rail-lines", "visibility", railVisibility);
+        }
+        if (map.getLayer("rail-stations")) {
+            map.setLayoutProperty("rail-stations", "visibility", railVisibility);
+        }
+
+        if (!map._railStationEventsAdded) {
+            map._railStationEventsAdded = true;
+
+            map.on("click", "rail-stations", (e) => {
+                const name = e.features?.[0]?.properties?.name || "Railway Station";
+
+                new maplibregl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setText(name)
+                    .addTo(map);
+            });
+
+            map.on("mouseenter", "rail-stations", () => {
+                map.getCanvas().style.cursor = "pointer";
+            });
+
+            map.on("mouseleave", "rail-stations", () => {
+                map.getCanvas().style.cursor = "";
+            });
+        }
     }
 
     function parseRelations(rawRelations) {
@@ -218,12 +300,14 @@
             center: [80.2707, 13.0827],
             zoom: 12,
 
-            minZoom:11
+            // minZoom:11
         });
 
         map.on("load", () => {
+            loadRailways(currentMetroState);
             unsubscribeMetro = metroLines.subscribe((value) => {
                 currentMetroState = value;
+                loadRailways(value);
                 loadMetro(value);
             });
         });
