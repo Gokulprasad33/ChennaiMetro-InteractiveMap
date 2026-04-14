@@ -13,11 +13,13 @@
     let map;
     let unsubscribeMetro = null;
     let currentMetroState = {
+        // Metro lines
         blueLine: true,
         greenLine: true,
         orangeLine: true,
         violetLine: true,
         redLine: true,
+        // Train line
         trainLine: true,
     };
 
@@ -30,7 +32,9 @@
     };
 
     const lineOrder = ['blueLine', 'greenLine', 'orangeLine', 'violetLine', 'redLine'];
-    
+    // Lines under construction
+    const constructionRefs = [lineMap.orangeLine, lineMap.redLine, lineMap.violetLine];
+
     // User preference 
     let theme = $state("dark");
     let themeSwitcher = $state(false);
@@ -46,7 +50,6 @@
     }
 
     function toggleTheme(){
-
         themeSwitcher = !themeSwitcher;
     }
 
@@ -66,7 +69,7 @@
       });
 
       map.once("style.load", () => {
-                loadRailways(currentMetroState);
+        loadRailways(currentMetroState);
         loadMetro(currentMetroState);
       });
 
@@ -93,7 +96,9 @@
             }
         }
 
-        const beforeMetroId = map.getLayer("metro-line") ? "metro-line" : undefined;
+        const beforeMetroId = lineOrder
+            .map((key) => `metro-line-${key}`)
+            .find((id) => map.getLayer(id));
 
         if (!map.getLayer("rail-lines")) {
             const railLinesLayer = {
@@ -134,12 +139,37 @@
             else map.addLayer(railStationsLayer);
         }
 
-        const railVisibility = metroState?.trainLine ? "visible" : "none";
-        if (map.getLayer("rail-lines")) {
-            map.setLayoutProperty("rail-lines", "visibility", railVisibility);
+        if (!map.getLayer('rail-station-labels')) {
+            map.addLayer({
+                id: 'rail-station-labels',
+                type: 'symbol',
+                source: 'railways',
+                filter: ['==', '$type', 'Point'],
+                layout: {
+                    'text-field': ['get', 'name'],
+                    'text-font': ['Noto Sans Regular'],
+                    'text-size': 10,
+                    'text-anchor': 'left',
+                    'text-offset': [0.8, 0]
+                },
+                minzoom: 14,
+                paint: {
+                    'text-color': '#ffffff',
+                    'text-halo-color': '#000000',
+                    'text-halo-width': 1
+                }
+            });
         }
-        if (map.getLayer("rail-stations")) {
-            map.setLayoutProperty("rail-stations", "visibility", railVisibility);
+
+        const railVisibility = metroState?.trainLine ? 'visible' : 'none';
+        if (map.getLayer('rail-lines')) {
+            map.setLayoutProperty('rail-lines', 'visibility', railVisibility);
+        }
+        if (map.getLayer('rail-stations')) {
+            map.setLayoutProperty('rail-stations', 'visibility', railVisibility);
+        }
+        if (map.getLayer('rail-station-labels')) {
+            map.setLayoutProperty('rail-station-labels', 'visibility', railVisibility);
         }
 
         if (!map._railStationEventsAdded) {
@@ -204,7 +234,6 @@
             console.log('No active refs. Ensure this is intentional (all toggles off).');
         }
 
-        const metroFilter = ['in', ['get', 'ref'], ['literal', activeRefs]];
         const stationFilter = ['all', ['==', '$type', 'Point'], ['in', ['get', 'ref'], ['literal', activeRefs]]];
 
         if (!map.getSource('metro')) {
@@ -226,19 +255,46 @@
                 return;
             }
         }
-            if (!map.getLayer("metro-line")) {
-            map.addLayer({
-                id: "metro-line",
-                type: "line",
-                source: "metro",
-                filter: metroFilter,
-                paint: {
-                    "line-width": 4,
-                    "line-color": ["coalesce", ["get", "colour"], "#00ffcc"]
-                }
-            });
-        } else {
-            map.setFilter("metro-line", metroFilter);
+        for (const key of lineOrder) {
+            const ref = lineMap[key];
+            const layerId = `metro-line-${key}`;
+            const isConstruction = constructionRefs.includes(ref);
+
+            const lineFilter = [
+                'all',
+                ['in', ['geometry-type'], ['literal', ['LineString', 'MultiLineString']]],
+                ['==', ['get', 'ref'], ref]
+            ];
+
+            if (!map.getLayer(layerId)) {
+                map.addLayer({
+                    id: layerId,
+                    type: 'line',
+                    source: 'metro',
+                    filter: lineFilter,
+                    layout: {
+                        'line-cap': 'round',
+                        'line-join': 'round',
+                        'visibility': metroState?.[key] ? 'visible' : 'none'
+                    },
+                    paint: {
+                        'line-width': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            10, 3,
+                            12, 4.5,
+                            15, 7
+                        ],
+                        'line-color': ['coalesce', ['get', 'colour'], '#00ffcc'],
+                        'line-opacity': isConstruction ? 0.9 : 0.95,
+                        ...(isConstruction ? { 'line-dasharray': [2.2, 2] } : {})
+                    }
+                });
+            } else {
+                map.setFilter(layerId, lineFilter);
+                map.setLayoutProperty(layerId, 'visibility', metroState?.[key] ? 'visible' : 'none');
+            }
         }
 
             // STATIONS
@@ -247,7 +303,7 @@
                 id: "stations",
                 type: "circle",
                 source: "metro",
-                filter:["==", "$type", "Point"],
+                filter: ["==", "$type", "Point"],
                 paint: {
                     "circle-radius": 5,
                     "circle-color": ["coalesce", ["get", "colour"], "#ffffff"],
@@ -258,6 +314,31 @@
                 
             });
             
+        } else {
+            map.setFilter("stations", stationFilter);
+        }
+
+        if (!map.getLayer('metro-station-labels')) {
+            map.addLayer({
+                id: 'metro-station-labels',
+                type: 'symbol',
+                source: 'metro',
+                filter: ['==', '$type', 'Point'],
+                layout: {
+                    'text-field': ['get', 'name'],
+                    'text-font': ['Noto Sans Regular'],
+                    'text-size': 12,
+                    'text-anchor': 'left',
+                    'text-offset': [0.8, 0]
+                },
+                paint: {
+                    'text-color': '#ffffff',
+                    'text-halo-color': '#000000',
+                    'text-halo-width': 1
+                }
+            });
+        } else {
+            map.setFilter('metro-station-labels', stationFilter);
         }
 
             // CLICK INTERACTION
@@ -337,13 +418,19 @@
                     const railVisibility = value?.trainLine ? 'visible' : 'none';
                     if (map.getLayer('rail-lines')) map.setLayoutProperty('rail-lines', 'visibility', railVisibility);
                     if (map.getLayer('rail-stations')) map.setLayoutProperty('rail-stations', 'visibility', railVisibility);
+                    if (map.getLayer('rail-station-labels')) map.setLayoutProperty('rail-station-labels', 'visibility', railVisibility);
                 }
                 if (map.getSource('metro')) {
                      const activeRefs = lineOrder.filter((key) => !!value?.[key]).map((key) => lineMap[key]);
-                     const metroFilter = ["in", ["get", "ref"], ["literal", activeRefs]];
                      const stationFilter = ["all", ["==", "$type", "Point"], ["in", ["get", "ref"], ["literal", activeRefs]]];
-                     if (map.getLayer('metro-line')) map.setFilter('metro-line', metroFilter);
+                            for (const key of lineOrder) {
+                                const layerId = `metro-line-${key}`;
+                                if (map.getLayer(layerId)) {
+                                    map.setLayoutProperty(layerId, 'visibility', value?.[key] ? 'visible' : 'none');
+                                }
+                            }
                      if (map.getLayer('stations')) map.setFilter('stations', stationFilter);
+                     if (map.getLayer('metro-station-labels')) map.setFilter('metro-station-labels', stationFilter);
                 }
             });
         });

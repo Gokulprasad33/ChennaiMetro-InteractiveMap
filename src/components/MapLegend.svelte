@@ -5,9 +5,9 @@
 	const metroLines = [
 		{ name: 'Blue Line', icon: '/icons/lines/blueLine.svg' },
 		{ name: 'Green Line', icon: '/icons/lines/greenLine.svg' },
-		{ name: 'Orange Line', icon: '/icons/lines/orangeLine.svg' },
-		{ name: 'Red Line', icon: '/icons/lines/redLine.svg' },
-		{ name: 'Violet Line', icon: '/icons/lines/violetLine.svg' }
+		{ name: 'Orange Line (Under Construction)', icon: '/icons/lines/orangeLine.svg' },
+		{ name: 'Red Line (Under Construction)', icon: '/icons/lines/redLine.svg' },
+		{ name: 'Violet Line (Under Construction)', icon: '/icons/lines/violetLine.svg' }
 	];
 </script>
 
