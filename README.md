@@ -24,7 +24,7 @@ You can preview the production build with `npm run preview`.
 ## Sources 
 - CMRL Phase 2 : https://chennaimetrorail.org/wp-content/uploads/2025/03/Phase-II-Map-Updated-Map-PHASE-2.pdf
 - Wiki Pedia Reference : https://upload.wikimedia.org/wikipedia/commons/4/4f/Chennai_Metro_Map_updated.svg
-- CMDR progress : https://www.google.com/maps/d/u/0/viewer?mid=18XQotfAqHAB1mW3QsnMWPEWyaZ_RBmQ&ll=13.079892753239752%2C80.20668764372047&z=11
+- CMRL progress : https://www.google.com/maps/d/u/0/viewer?mid=18XQotfAqHAB1mW3QsnMWPEWyaZ_RBmQ&ll=13.079892753239752%2C80.20668764372047&z=11
 
 
 ## TODO :
