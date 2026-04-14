@@ -382,6 +382,8 @@
         }
 
     onMount(() => {
+        document.getElementById('loader')?.remove();
+
         const protocol = new Protocol();
         maplibregl.addProtocol("pmtiles", protocol.tile.bind(protocol));
 

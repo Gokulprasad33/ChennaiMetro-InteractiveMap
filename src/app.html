@@ -4,9 +4,33 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
+
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				background: #0b0f14;
+			}
+
+			#loader {
+				position: fixed;
+				inset: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: #0b0f14;
+				color: #aaa;
+				font-family: system-ui, sans-serif;
+				font-size: 14px;
+				z-index: 9999;
+			}
+		</style>
+
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
+		<div id="loader">Loading map...</div>
+
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
