@@ -4,13 +4,35 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
-		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/entry/start.BKjJh3w1.js" rel="modulepreload">
-		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/BL2WmT9w.js" rel="modulepreload">
+
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				background: #0b0f14;
+			}
+
+			#loader {
+				position: fixed;
+				inset: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: #0b0f14;
+				color: #aaa;
+				font-family: system-ui, sans-serif;
+				font-size: 14px;
+				z-index: 9999;
+			}
+		</style>
+
+		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/entry/start.B8O8FZph.js" rel="modulepreload">
+		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/BCIjwxSz.js" rel="modulepreload">
 		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/BeKlHpCM.js" rel="modulepreload">
 		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/C8qQ0Vly.js" rel="modulepreload">
-		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/DLhYW2C4.js" rel="modulepreload">
+		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/w-BMHXG4.js" rel="modulepreload">
 		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/B18xQKvz.js" rel="modulepreload">
-		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/entry/app.DlRQOayb.js" rel="modulepreload">
+		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/entry/app.VjMy4dM4.js" rel="modulepreload">
 		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/CiDWfR8Q.js" rel="modulepreload">
 		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/n0D8hNsq.js" rel="modulepreload">
 		<link href="/ChennaiMetro-InteractiveMap/_app/immutable/chunks/CILfuRhP.js" rel="modulepreload">
@@ -18,10 +40,12 @@
 		
 	</head>
 	<body data-sveltekit-preload-data="hover">
+		<div id="loader">Loading map...</div>
+
 		<div style="display: contents">
 			<script>
 				{
-					__sveltekit_rc6c37 = {
+					__sveltekit_mjbmc = {
 						base: "/ChennaiMetro-InteractiveMap",
 						assets: "/ChennaiMetro-InteractiveMap"
 					};
@@ -29,8 +53,8 @@
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/ChennaiMetro-InteractiveMap/_app/immutable/entry/start.BKjJh3w1.js"),
-						import("/ChennaiMetro-InteractiveMap/_app/immutable/entry/app.DlRQOayb.js")
+						import("/ChennaiMetro-InteractiveMap/_app/immutable/entry/start.B8O8FZph.js"),
+						import("/ChennaiMetro-InteractiveMap/_app/immutable/entry/app.VjMy4dM4.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element);
 					});
